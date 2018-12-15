@@ -1,0 +1,26 @@
+{
+   "content_scripts": [ {
+      "js": [ "record.js" ],
+      "matches": [ "http://*/*", "https://*/*" ],
+      "all_frames": true,
+      "match_about_blank": true,
+      "run_at": "document_start"
+   } ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png",
+    "default_title": "Auto-record WebRTC audio"
+  },
+  "manifest_version": 2,
+  "name": "webrtcHacks Recorder",
+  "description": "Chad experimenting with a forced recording extension",
+  "version": "0.0.1",
+  "icons": {
+    "128": "logo.png"
+  }
+}
+
