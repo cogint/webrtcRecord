@@ -1,47 +1,47 @@
-blobs = [];
-
 chrome.runtime.onConnect.addListener(function (port) {
 
-    let tabId = port.sender.tab.id;
+    //ToDo: remove - temp to make sure there is a page open for downloads
+    //window.open("", "recordings");
 
     port.onMessage.addListener(function (message) {
         //console.log(message);
         //if (message[0] !== 'webrtcRecord') return;
 
         //download and make a new copy of the blob
-        if (message[0] === 'recording'){
+        if (message[0] === 'recording') {
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', message[2], true);
+            xhr.open('GET', message[1], true);
             xhr.responseType = 'blob';
-            xhr.onload = function(e) {
+            xhr.onload = function (e) {
                 if (this.status === 200) {
                     let newBlob = this.response;
                     console.log(newBlob);
-                    download2(newBlob);
+                    download(newBlob, message[2]);
                 }
             };
-            xhr.send();           /// play(message[2]);
+            xhr.send();
+            return;
         }
-        else{
+        else {
             console.log("message:", new Date(), message);
         }
 
-        function checkTab(){
-            if (chrome.runtime.lastError){
+        //let tabId = port.sender.tab.id;
+
+        function checkTab(tab) {
+            if (chrome.runtime.lastError) {
                 console.log(chrome.runtime.lastError.message);
             }
-            else{
-                chrome.pageAction.show(tabId);
-                chrome.pageAction.setTitle({ tabId: tabId, title: 'Recording this tab'});
+            else {
+                chrome.pageAction.show(tab.id);
+                chrome.pageAction.setTitle({tabId: tab.id, title: 'Recording this tab'});
             }
         }
 
-        tabId = port.sender.tab.id;
         chrome.tabs.get(port.sender.tab.id, checkTab)
 
     });
 });
-
 /*chrome.runtime.onDisconnect(function(message){
     console.log("Extension port disconnected " + message);
 });*/
@@ -72,12 +72,13 @@ function download(blobUrl) {
 }
 */
 
-function download(blob) {
-    console.log("downloading");
+//ToDo: this is not working
+function download(blob, filename) {
+    console.log("prompting user to save " + filename);
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'test.webm';
+    a.download = filename;
     a.click();
     window.URL.revokeObjectURL(blob);
 
